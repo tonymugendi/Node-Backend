@@ -7,6 +7,12 @@ import {
   getSingleProduct,
   updateProduct,
 } from "./handlers/product";
+import { getSingleUpdate, getUpdates } from "./handlers/update";
+import {
+  createUpdate,
+  deleteUpdate,
+  updateUpdate,
+} from "./handlers/update-point";
 import { handleInputErrors } from "./modules/middleware";
 
 const router = Router();
@@ -29,27 +35,28 @@ router.post(
 router.delete("/product/:id", deleteProduct);
 
 /** * Update */
-router.get("/update", (req, res) => {});
-router.get("/update/:id", (req, res) => {});
+router.get("/updates", (req, res) => getUpdates);
+router.get("/update/:id", (req, res) => getSingleUpdate);
 router.post(
   "/update",
   body("title").exists().isString(),
   body("body").exists().isString(),
+  body("productId").exists().isString(),
   handleInputErrors,
-  (req, res) => {}
+  createUpdate
 );
 router.put(
   "/update/:id",
   body("title").optional(),
   body("body").isString(),
-  body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]),
+  body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]).optional(),
   body("version").optional(),
-  (req, res) => {}
+  updateUpdate
 );
-router.delete("/update/:id", (req, res) => {});
+router.delete("/update/:id", (req, res) => deleteUpdate);
 
 /** * UpdatePoint */
-router.get("/updatepoint", (req, res) => {});
+router.get("/updatepoints", (req, res) => {});
 router.get("/updatepoint/:id", (req, res) => {});
 router.post(
   "/updatepoint",
@@ -67,5 +74,9 @@ router.put(
   (req, res) => {}
 );
 router.delete("/updatepoint/:id", (req, res) => {});
+
+router.use((err, req, res, next) => {
+  res.json({ message: "Oops that's on us" });
+});
 
 export default router;
